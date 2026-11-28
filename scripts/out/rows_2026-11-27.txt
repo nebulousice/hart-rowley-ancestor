@@ -1,0 +1,40 @@
+type   |W|     N  rank  max l_inv  #(l_inv>rank)  unique-ancestor  distribution of l_inv (0,1,2,...)
+A1     2      1   1    1         0              yes              [1, 1]  [= classical model]
+A2     6      3   2    2         0              yes              [1, 3, 2]  [= brute force]  [= classical model]
+A3     24     6   3    3         0              yes              [1, 9, 10, 4]  [= brute force]  [= classical model]
+A4     120    10  4    4         0              yes              [1, 25, 48, 36, 10]  [= brute force]  [= classical model]
+A5     720    15  5    5         0              yes              [1, 75, 240, 264, 104, 36]  [= classical model]
+A6     5040   21  6    6         0              yes              [1, 231, 1212, 1906, 1098, 438, 154]  [= classical model]
+A7     40320  28  7    7         0              yes              [1, 763, 6392, 14079, 10989, 5030, 2250, 816]
+B2     8      4   2    2         0              yes              [1, 5, 2]  [= brute force]  [= classical model]
+B3     48     9   3    3         0              yes              [1, 19, 20, 8]  [= brute force]  [= classical model]
+B4     384    16  4    4         0              yes              [1, 75, 156, 123, 29]  [= classical model]
+B5     3840   25  5    5         0              yes              [1, 311, 1180, 1489, 720, 139]  [= classical model]
+B6     46080  36  6    6         0              yes              [1, 1383, 9222, 17435, 12750, 4418, 871]  [= classical model]
+D4     192    12  4    3         0              yes              [1, 43, 88, 60]  [= brute force]  [= classical model]
+D5     1920   20  5    5         0              yes              [1, 155, 570, 719, 429, 46]  [= classical model]
+D6     23040  30  6    5         0              yes              [1, 751, 4552, 8619, 7130, 1987]  [= classical model]
+E6     51840  36  6    8         160            yes              [1, 891, 6664, 15236, 16850, 9622, 2416, 150, 10]
+F4     1152   24  4    5         50             yes              [1, 139, 374, 396, 192, 50]  [= brute force]
+G2     12     6   2    2         0              yes              [1, 7, 4]  [= brute force]
+H3     120    15  3    4         3              yes              [1, 31, 52, 33, 3]  [= brute force]
+H4     14400  60  4    7         1746           yes              [1, 571, 2854, 5032, 4196, 1567, 173, 6]
+I2(5)  10     5   2    2         0              yes              [1, 5, 4]
+I2(7)  14     7   2    2         0              yes              [1, 7, 6]  [= brute force]
+I2(8)  16     8   2    2         0              yes              [1, 9, 6]
+I2(9)  18     9   2    2         0              yes              [1, 9, 8]
+I2(10) 20     10  2    2         0              yes              [1, 11, 8]
+I2(12) 24     12  2    2         0              yes              [1, 13, 10]
+
+Shortest elements with l_inv > rank (generators r1, r2, ... = nodes 0, 1, ... of coxlib.cartan):
+  E6  w = r4 r5 r6 r1 r3 r4 r5 r2 r4 r3 r1   (length 11)   ancestor decomposition: r4 r1 | r5 r3 | r6 r4 | r5 r2 | r4 | r3 | r1   -> l_inv = 7 > 6
+  F4  w = r3 r4 r1 r2 r3 r2 r1   (length 7)   ancestor decomposition: r3 r1 | r4 r2 | r3 | r2 | r1   -> l_inv = 5 > 4
+  H3  w = r2 r1 r2 r3 r1 r2 r1   (length 7)   ancestor decomposition: r2 r1 r2 | r3 r1 | r2 | r1   -> l_inv = 4 > 3
+  H4  w = r2 r3 r1 r2 r1 r2 r3 r4   (length 8)   ancestor decomposition: r2 r3 r1 r2 | r1 | r2 | r3 | r4   -> l_inv = 5 > 4
+
+Checks of worked examples:
+  A3  w = r1 r3 r2 r3 (2431):  l_inv = 3 , suffix version (l_inv of w^-1) = 2  expected 3, 2: True
+  A6  w = r6 r3 r2 r1 r4 r5:  prefix decomposition [[2, 5], [1, 3], [0, 4]]  suffix decomposition [[2], [1, 3, 5], [0, 4]]  as in the source: True
+  Coxeter elements (A4, A5, B4, D5, E6, F4, H3, H4): l_inv = path length and a(w) = prod D(w): True
+
+(5.1 s; python 3.12.10)

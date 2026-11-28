@@ -1,0 +1,8 @@
+H3  word r2 r1 r2 r3 r1 r2 r1  length 7  l_inv = 4  (rank 3)  ancestor lengths [3, 2, 1, 1]  #prefixes per step [9, 6, 3, 2]
+F4  word r3 r4 r1 r2 r3 r2 r1  length 7  l_inv = 5  (rank 4)  ancestor lengths [2, 2, 1, 1, 1]  #prefixes per step [11, 7, 4, 3, 2]
+H4  word r2 r3 r1 r2 r1 r2 r3 r4  length 8  l_inv = 5  (rank 4)  ancestor lengths [4, 1, 1, 1, 1]  #prefixes per step [10, 5, 4, 3, 2]
+H4  word r4 r2 r3 r1 r2 r1 r2 r3 r4 r3 r2 r1 r2 r3 r1 r2 r1 r2 r3 r4  length 20  l_inv = 7  (rank 4)  ancestor lengths [6, 5, 2, 2, 3, 1, 1]  #prefixes per step [46, 24, 13, 9, 6, 3, 2]
+E6  word r4 r5 r6 r1 r3 r4 r5 r2 r4 r3 r1  length 11  l_inv = 7  (rank 6)  ancestor lengths [2, 2, 2, 2, 1, 1, 1]  #prefixes per step [20, 15, 11, 7, 4, 3, 2]
+E6  word r3 r2 r4 r5 r6 r1 r3 r4 r5 r2 r4 r3 r1  length 13  l_inv = 8  (rank 6)  ancestor lengths [2, 2, 2, 2, 2, 1, 1, 1]  #prefixes per step [24, 20, 15, 11, 7, 4, 3, 2]
+E7  word r7 r5 r6 r4 r5 r3 r4 r1 r3 r2 r4 r5 r6 r7  length 14  l_inv = 9  (rank 7)  ancestor lengths [2, 2, 2, 2, 2, 1, 1, 1, 1]  #prefixes per step [27, 21, 16, 12, 8, 5, 4, 3, 2]
+E8  word r7 r5 r6 r4 r5 r3 r4 r1 r3 r2 r4 r5 r6 r7  length 14  l_inv = 9  (rank 8)  ancestor lengths [2, 2, 2, 2, 2, 1, 1, 1, 1]  #prefixes per step [27, 21, 16, 12, 8, 5, 4, 3, 2]

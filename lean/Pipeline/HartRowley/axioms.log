@@ -1,0 +1,8 @@
+'HartRowley.relations_H3' depends on axioms: [propext, Classical.choice]
+'HartRowley.table_ok' depends on axioms: [propext, Classical.choice]
+'HartRowley.bfs_reaches_all' depends on axioms: [propext, Classical.choice]
+'HartRowley.lenData_ok' depends on axioms: [propext, Classical.choice]
+'HartRowley.involData_ok' depends on axioms: [propext, Classical.choice]
+'HartRowley.witness_facts' depends on axioms: [propext, Classical.choice]
+'HartRowley.h3_table' depends on axioms: [propext, Classical.choice]
+'HartRowley.h3_counterexample' depends on axioms: [propext, Classical.choice]

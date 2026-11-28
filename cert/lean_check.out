@@ -1,0 +1,45 @@
+command: (time bash scripts/lean_check.sh HartRowley), run in the working repository C:/Users/<user>/Documents/research-pipeline
+header assembled: 2026-11-27T13:26:48Z (run started about 47 min earlier)
+commit: 5bb73447f17b5698bb0d68789d6fdd754a85a819 + uncommitted lean/Pipeline/HartRowley/ and one import line in lean/Pipeline.lean
+lean files sha256:
+  ff627893aeeae97d711528b34cfa2795c4d0d29ab5ebdfa49e48f30b92f68a94 *lean/Pipeline/HartRowley/Main.lean
+  f468e40b6b0fbf03fefd9545275737212b6849bffc57bcba011c02cfb1eb0393 *lean/Pipeline/HartRowley/Data.lean
+  2c8075fbed4e2dcd21203ef6fe52141f06b13637c89d88e566fe867928eedd85 *lean/Pipeline.lean
+toolchain: leanprover/lean4:v4.37.0-rc1; mathlib rev: 
+----
+== lake build
+info: Pipeline/HartRowley/Main.lean:157:0: 'HartRowley.bfs_reaches_all' depends on axioms: [propext, Classical.choice]
+info: Pipeline/HartRowley/Main.lean:158:0: 'HartRowley.lenData_ok' depends on axioms: [propext, Classical.choice]
+info: Pipeline/HartRowley/Main.lean:159:0: 'HartRowley.involData_ok' depends on axioms: [propext, Classical.choice]
+info: Pipeline/HartRowley/Main.lean:160:0: 'HartRowley.witness_facts' depends on axioms: [propext, Classical.choice]
+info: Pipeline/HartRowley/Main.lean:161:0: 'HartRowley.h3_table' depends on axioms: [propext, Classical.choice]
+info: Pipeline/HartRowley/Main.lean:162:0: 'HartRowley.h3_counterexample' depends on axioms: [propext, Classical.choice]
+⚠ [1689/1693] Replayed Pipeline.Smoke.Main
+warning: Pipeline\Smoke\Main.lean: imports `Mathlib.Tactic.NormNum` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: Pipeline/Smoke/Main.lean:7:0: 'smoke' depends on axioms: [propext]
+⚠ [1690/1693] Ran Pipeline.Smoke.Main:irArts
+warning: Pipeline\Smoke\Main.lean: imports `Mathlib.Tactic.NormNum` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [1691/1693] Built Pipeline (1650s)
+warning: Pipeline.lean: imports `Mathlib.Data.Nat.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\Smoke\Main.lean: imports `Mathlib.Tactic.NormNum` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\Smoke\Main.lean: imports `Mathlib.Tactic.NormNum` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [1692/1693] Ran Pipeline:irArts
+warning: Pipeline.lean: imports `Mathlib.Data.Nat.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\Smoke\Main.lean: imports `Mathlib.Tactic.NormNum` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\Smoke\Main.lean: imports `Mathlib.Tactic.NormNum` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+Build completed successfully (1693 jobs).
+== sorry / admit scan
+== axioms
+'HartRowley.relations_H3' depends on axioms: [propext, Classical.choice]
+'HartRowley.table_ok' depends on axioms: [propext, Classical.choice]
+'HartRowley.bfs_reaches_all' depends on axioms: [propext, Classical.choice]
+'HartRowley.lenData_ok' depends on axioms: [propext, Classical.choice]
+'HartRowley.involData_ok' depends on axioms: [propext, Classical.choice]
+'HartRowley.witness_facts' depends on axioms: [propext, Classical.choice]
+'HartRowley.h3_table' depends on axioms: [propext, Classical.choice]
+'HartRowley.h3_counterexample' depends on axioms: [propext, Classical.choice]
+PASS lean_check HartRowley (Lean (version 4.37.0-rc1, x86_64-w64-windows-gnu, commit 0b77e12952ad39077d80d8bd6b66d601f225c321, Release))
+
+real	47m3.542s
+user	0m1.721s
+sys	0m3.440s

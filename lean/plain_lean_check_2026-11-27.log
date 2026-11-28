@@ -1,0 +1,19 @@
+command: lean -o build/Pipeline/HartRowley/Data.olean Pipeline/HartRowley/Data.lean; LEAN_PATH=build lean -o build/Pipeline/HartRowley/Main.olean Pipeline/HartRowley/Main.lean
+run in: a scratch copy of lean/Pipeline/HartRowley/{Data,Main}.lean with lean-toolchain, no lakefile, no Mathlib
+log finished: 2026-11-27T15:12:14Z
+toolchain: Lean (version 4.37.0-rc1, x86_64-w64-windows-gnu, commit 0b77e12952ad39077d80d8bd6b66d601f225c321, Release)
+lean files sha256:
+  ff627893aeeae97d711528b34cfa2795c4d0d29ab5ebdfa49e48f30b92f68a94 *Pipeline/HartRowley/Main.lean
+  f468e40b6b0fbf03fefd9545275737212b6849bffc57bcba011c02cfb1eb0393 *Pipeline/HartRowley/Data.lean
+----
+Data OK
+'HartRowley.relations_H3' depends on axioms: [propext, Classical.choice]
+'HartRowley.table_ok' depends on axioms: [propext, Classical.choice]
+'HartRowley.bfs_reaches_all' depends on axioms: [propext, Classical.choice]
+'HartRowley.lenData_ok' depends on axioms: [propext, Classical.choice]
+'HartRowley.involData_ok' depends on axioms: [propext, Classical.choice]
+'HartRowley.witness_facts' depends on axioms: [propext, Classical.choice]
+'HartRowley.h3_table' depends on axioms: [propext, Classical.choice]
+'HartRowley.h3_counterexample' depends on axioms: [propext, Classical.choice]
+Main exit 0
+runtime 928 s

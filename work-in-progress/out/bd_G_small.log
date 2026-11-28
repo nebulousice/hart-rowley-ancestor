@@ -1,0 +1,4 @@
+{"type": "D4", "order": 192, "ties": 0, "max_linv": 3, "max_G": 3, "rank": 4, "hist_G": [1, 8, 21, 162], "G_minus_negmax": {"-1": 148, "0": 44}, "linv_gt_G": 0, "seconds": 0.1}
+{"type": "D6", "order": 23040, "ties": 0, "max_linv": 5, "max_G": 5, "rank": 6, "hist_G": [1, 22, 134, 843, 2978, 19062], "G_minus_negmax": {"-1": 19046, "0": 3946, "1": 48}, "linv_gt_G": 0, "seconds": 1.1}
+{"type": "B7", "order": 645120, "ties": 0, "max_linv": 7, "max_G": 7, "rank": 7, "hist_G": [1, 33, 428, 2553, 9253, 32372, 116256, 484224], "G_minus_negmax": {"0": 614374, "1": 30746}, "linv_gt_G": 0, "seconds": 28.9}
+{"type": "D7", "order": 322560, "ties": 0, "max_linv": 7, "max_G": 7, "rank": 7, "hist_G": [1, 36, 333, 2612, 9591, 51233, 185314, 73440], "G_minus_negmax": {"-1": 205262, "0": 114886, "1": 2412}, "linv_gt_G": 0, "seconds": 14.6}

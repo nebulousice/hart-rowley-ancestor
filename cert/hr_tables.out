@@ -1,0 +1,71 @@
+command: python hr_tables.py --big
+date: 2026-11-27T13:06:10Z
+commit: d72b9ae3fc7c652864d9506640a3899a12394442 (fresh git clone of the local repository at this HEAD; the uncommitted cert/ scripts were copied in, see sha256)
+uncommitted cert files sha256:
+  07709f7c448cf0311e2321cbcff5e0e18bf357f7b2a18ac6f7b5adca36730fe4 *hr_tables.py
+  939625ab44fa9788a05fd281c225ed84a140ad110bdcc724610e2e379c75b683 *hr_tables_x.py
+  c1b55292378112c5f8d50e2f02772dfbeb37cbefe2d301191a168520ad5558ee *hr_lean_gen.py
+  62623851347d29339bd9e7fcf266c7ccd807949c53407aa7c759fb4dbc1b87d3 *run_cert.sh
+python: 3.12.10  platform: Windows-11-10.0.26200-SP0
+libraries: Python standard library only (itertools, collections); no numpy/sympy/flint used
+----
+hr_tables.py (primary): python 3.12.10
+A6 example w = r6r3r2r1r4r5: ancestor decomposition ['r3r6', 'r2r4', 'r1r5']  suffix decomposition ['r3', 'r2r4r6', 'r1r5']
+  matches source (prefix -> (r3r6)(r2r4)(r1r5), suffix -> (r3)(r2r4r6)(r1r5)): True
+  swapped reading would give prefix=['r3', 'r2r4r6', 'r1r5'] suffix=['r3r6', 'r2r4', 'r1r5']
+== H3 ==
+  |W| = 120, #roots = 30, #positive roots = 15, #involutions = 31, max length = 15
+  self-test prefix criterion (all 14400 pairs): mismatches = 0
+  ancestor uniqueness failures (w != e): 0
+  R1 (source) distribution l_inv = 0..4: [1, 31, 52, 33, 3]
+  R1 (source) max l_inv = 4 ; elements with l_inv > rank (3): 3
+  shortest violators (length 7): r2r1r2r1r3r2r1, r2r1r3r2r1r2r3
+  R2 suffix: max = 4 ; elements > rank: 3
+  R3 alt(prefix first): max = 4 ; elements > rank: 3
+  R3b alt(suffix first): max = 4 ; elements > rank: 3
+  R4 min length-additive: max = 3 ; elements > rank: 0
+  Coxeter elements: 4 distinct; Prop 2.2 failures 0; Prop 2.5 (path length) failures 0
+H3 witness w = r2r1r2r3r1r2r1: l(w) = 7, decomposition ['r2r1r2', 'r1r3', 'r2', 'r1'], lengths [3, 2, 1, 1], l_inv = 4
+  #prefixes = 9 ; involution prefixes: ['r2', 'r2r1r2']
+  witness decomposition equals (r2r1r2)(r3r1)(r2)(r1): True
+  R4 on the witness: min #involutions = 2 ; all minimal factorisations: ['(r2)(r1r2r1r3r2r1)']
+== F4 ==
+  |W| = 1152, #roots = 48, #positive roots = 24, #involutions = 139, max length = 24
+  self-test prefix criterion (all 1327104 pairs): mismatches = 0
+  ancestor uniqueness failures (w != e): 0
+  R1 (source) distribution l_inv = 0..5: [1, 139, 374, 396, 192, 50]
+  R1 (source) max l_inv = 5 ; elements with l_inv > rank (4): 50
+  shortest violators (length 7): r1r3r2r4r3r2r1, r2r1r4r3r2r3r4
+  R2 suffix: max = 5 ; elements > rank: 50
+  R3 alt(prefix first): max = 5 ; elements > rank: 54
+  R3b alt(suffix first): max = 5 ; elements > rank: 54
+  R4 min length-additive: max = 4 ; elements > rank: 0
+  Coxeter elements: 8 distinct; Prop 2.2 failures 0; Prop 2.5 (path length) failures 0
+F4 witness w = r3r4r1r2r3r2r1: l(w) = 7, decomposition ['r1r3', 'r2r4', 'r3', 'r2', 'r1'], l_inv = 5
+== H4 ==
+  |W| = 14400, #roots = 120, #positive roots = 60, #involutions = 571, max length = 60
+  ancestor uniqueness failures (w != e): 0
+  R1 (source) distribution l_inv = 0..7: [1, 571, 2854, 5032, 4196, 1567, 173, 6]
+  R1 (source) max l_inv = 7 ; elements with l_inv > rank (4): 1746
+  shortest violators (length 8): r2r1r3r2r1r2r3r4
+  R2 suffix: max = 7 ; elements > rank: 1746
+  R3 alt(prefix first): max = 7 ; elements > rank: 1646
+  R3b alt(suffix first): max = 7 ; elements > rank: 1646
+  R4 min length-additive: max = 4 ; elements > rank: 0
+  Coxeter elements: 8 distinct; Prop 2.2 failures 0; Prop 2.5 (path length) failures 0
+== E6 ==
+  |W| = 51840, #roots = 72, #positive roots = 36, #involutions = 891, max length = 36
+  ancestor uniqueness failures (w != e): 0
+  R1 (source) distribution l_inv = 0..8: [1, 891, 6664, 15236, 16850, 9622, 2416, 150, 10]
+  R1 (source) max l_inv = 8 ; elements with l_inv > rank (6): 160
+  shortest violators (length 11): r1r4r3r5r4r2r6r5r4r3r1, r4r3r1r6r5r4r2r3r4r5r6
+  R2 suffix: max = 8 ; elements > rank: 160
+  R3 alt(prefix first): max = 7 ; elements > rank: 194
+  R3b alt(suffix first): max = 7 ; elements > rank: 194
+  R4 min length-additive: max = 6 ; elements > rank: 0
+  Coxeter elements: 32 distinct; Prop 2.2 failures 0; Prop 2.5 (path length) failures 0
+CERTIFIED: H3 max l_inv = 4 (3 elements > 3); F4 max l_inv = 5 (50 elements > 4)
+CERTIFIED: H4 max l_inv = 7 (1746 elements > 4); E6 max l_inv = 8 (160 elements > 6)
+PASS
+----
+exit status: 0 ; runtime: 206 s

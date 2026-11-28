@@ -1,0 +1,399 @@
+\documentclass[11pt]{amsart}
+\usepackage{amssymb,amsthm,booktabs}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{fact}[theorem]{Fact}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+
+% Notation used throughout
+\newcommand{\linv}{\ell_{\mathrm{inv}}}
+\newcommand{\IP}{\mathcal{IP}}
+\DeclareMathOperator{\rem}{rem}
+\DeclareMathOperator{\Red}{Red}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\disp}{disp}
+\newcommand{\Z}{\mathbb{Z}}
+\DeclareUrlCommand\file{\urlstyle{tt}}% file paths; breakable, not hyperlinked
+\setlength{\emergencystretch}{2em}
+\raggedbottom
+
+\title[Involution length in finite Coxeter groups]{Counterexamples to a conjecture of Hart and Rowley on involution length: an independent verification}
+\date{2026-11-27}
+
+\begin{document}
+\begin{abstract}
+Hart and Rowley conjectured that, in a finite Coxeter group, the greedy decomposition of an element into longest involution prefixes never has more factors than the rank of the group. Levinstein was the first to publish a refutation of this conjecture, with counterexamples in \(H_3\), \(F_4\) and \(E_6\), and hence in \(E_7\) (via \(E_6\subset E_7\)). We give an independent verification. A short hand argument shows that one explicit element of \(H_3\) needs four factors. Exact computations by two independent programs give the largest number of factors in \(H_3\), \(F_4\), \(H_4\) and \(E_6\): it is \(4\), \(5\), \(7\) and \(8\). The \(H_3\) case is also checked in the Lean~4 proof assistant. Numerical computations give \(9\) for \(E_7\) and at least \(9\) for \(E_8\).
+
+\textbf{Expert verification required.} Verified so far with Lean~4 (the \(H_3\) counterexample) and two independent exact computer certificates; the counterexample write-up has not had a referee review. The type~A theorem mentioned in Section~\ref{sec:wip} passed AI review (Claude Opus checker, Claude Fable adversary, Claude Sonnet arbiter; round~2: all three accept with zero issues).
+\end{abstract}
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+\subsection*{The problem}
+A Coxeter group comes with a set of generators, each of order two, and a length function. Hart and Rowley~\cite{HR} studied the involutions that occur at the start of a shortest word for an element \(w\). They conjectured that the longest such involution is unique; they called it the \emph{ancestor} of \(w\). Removing the ancestor and repeating gives a factorization of \(w\) into involutions, the \emph{ancestor decomposition}. Its number of factors is the \emph{involution length} \(\linv(w)\). Hart and Rowley conjectured that \(\linv(w)\) is at most the number of generators when the group is finite~\cite[Conj.~1.3]{HR}. All terms are defined in Section~\ref{sec:defs}.
+
+\subsection*{Prior work}
+Hart and Rowley proved the uniqueness of the ancestor for Coxeter elements, that is, products of all the generators, each taken once~\cite[Prop.~2.2]{HR}. They reported that both conjectures hold for every irreducible finite Coxeter group of order below \(100{,}000\): for the dihedral groups by inspection, and for all others by a Magma computation~\cite[\S3]{HR}. Gimenez proved the ancestor property for every fully commutative element of an arbitrary Coxeter system~\cite{Gim}; an element is \emph{fully commutative} when any two of its shortest words are related by swaps of adjacent commuting generators. Later, Gaetz and Gao proved the uniqueness conjecture for every Coxeter group~\cite[Cor.~1.2]{GG}.
+
+Hart and Rowley also remark, tentatively, that the involution length might not change if the decomposition is built from the right end of the element, with longest involution suffixes~\cite[\S3]{HR}. The trureturing project refuted this equality earlier, with an element of the group \(A_3\)~\cite{OmegaPR}. That work did not address the conjecture studied here.
+
+\subsection*{Credit}
+\textbf{This is not the first refutation.} Levinstein was the first to publish a refutation of Conjecture~1.3 of~\cite{HR}, in a public preprint dated 2026-11-27~\cite{Lev}. That report gives counterexamples in \(H_3\), \(F_4\) and \(E_6\), the maxima \(4\), \(5\) and \(8\) of the involution length in these three groups, the bound \(\ge 8\) in \(E_7\) (obtained from \(E_6\subset E_7\)), and a Lean~4 proof for \(H_3\). Our computations were made independently, on the same day. They confirm Levinstein's values for \(H_3\), \(F_4\) and \(E_6\). The values \(7\) for \(H_4\), \(9\) for \(E_7\) and \(\ge 9\) for \(E_8\) are not in Levinstein's report; we claim no priority for them. The conjectures are due to Hart and Rowley, and the uniqueness of the ancestor is due to Gaetz and Gao.
+
+\subsection*{Results}
+Theorem~\ref{thm:h3} gives one element \(w\) of \(H_3\) with \(\linv(w)=4>3\). Proposition~\ref{prop:maxima} gives the exact maximum of \(\linv\) in \(H_3\), \(F_4\), \(H_4\) and \(E_6\). Section~\ref{sec:numerical} records numerical results for \(E_7\) and \(E_8\).
+
+\subsection*{What is proved how}
+We keep three kinds of evidence apart.
+\begin{itemize}
+\item \emph{By hand:} Theorem~\ref{thm:h3}, and the elementary Lemmas~\ref{lem:prefix}, \ref{lem:reduced}, \ref{lem:invol} and~\ref{lem:parabolic}. These arguments have not yet been independently reviewed.
+\item \emph{By computer:} Theorem~\ref{thm:h3} again, and Proposition~\ref{prop:maxima}. Each was computed in exact integer arithmetic by two independently written programs, which agree; for \(E_6\) the second program is an exploratory one that uses the same model of the group (Section~\ref{sec:computer}). The results for \(E_7\) and \(E_8\) rest on one whole-group program and one single-element checker; we call them numerical.
+\item \emph{In Lean~4:} the statement of Theorem~\ref{thm:h3} and the \(H_3\) row of Proposition~\ref{prop:maxima}, for an explicit permutation group of order \(120\) (Section~\ref{sec:lean}). Its identification with the Coxeter group \(H_3\) uses the cited fact \(\lvert W(H_3)\rvert=120\).
+\end{itemize}
+
+\section{Definitions and conventions}\label{sec:defs}
+
+\begin{definition}
+A \emph{Coxeter system} \((W,S)\) is a group \(W\) with a finite generating set \(S\) and the presentation
+\begin{equation}\label{eq:presentation}
+W=\bigl\langle S \bigm| (st)^{m(s,t)}=e \text{ for all } s,t\in S\bigr\rangle,
+\end{equation}
+where \(e\) is the identity, \(m(s,s)=1\), and \(m(s,t)=m(t,s)\in\{2,3,\dots\}\cup\{\infty\}\) for \(s\neq t\), with no relation when \(m(s,t)=\infty\). The \emph{rank} of \(W\) is \(\lvert S\rvert\).
+\end{definition}
+
+By~\eqref{eq:presentation}, every generator satisfies \(s^2=e\). The \emph{Coxeter graph} has vertex set \(S\); two generators are joined when \(m(s,t)\ge3\), and the edge is labelled \(m(s,t)\) when \(m(s,t)\ge4\). Generators that are not joined commute.
+
+A \emph{word} is a finite sequence of generators; it \emph{represents} the product of its letters. The \emph{length} \(\ell(w)\) is the least number of letters of a word representing \(w\). Such a shortest word is a \emph{reduced word} of \(w\). We write \(\Red(w)\) for the set of reduced words of \(w\). Two facts follow from the definition. First, every initial segment and every final segment of a reduced word is reduced. Second, reversing a word for \(w\) gives a word for \(w^{-1}\), because each generator is its own inverse; so \(\ell(w^{-1})=\ell(w)\), and \(\Red(w^{-1})\) consists of the reversals of the words in \(\Red(w)\).
+
+\begin{definition}[{\cite[\S1]{HR}}]
+An element \(u\) is a \emph{prefix} of \(w\) if some reduced word of \(w\) begins with a reduced word of \(u\).
+\end{definition}
+
+\begin{lemma}\label{lem:prefix}
+\(u\) is a prefix of \(w\) if and only if \(\ell(u)+\ell(u^{-1}w)=\ell(w)\).
+\end{lemma}
+
+\begin{proof}
+If \(\ell(u)+\ell(u^{-1}w)=\ell(w)\), a reduced word of \(u\) followed by a reduced word of \(u^{-1}w\) represents \(w\) with \(\ell(w)\) letters. So it is a reduced word of \(w\) that begins with a reduced word of \(u\). Conversely, let a reduced word of \(w\) split as a reduced word of \(u\) followed by a word \(b\). Then \(b\) represents \(u^{-1}w\), so \(\ell(u^{-1}w)\le\ell(w)-\ell(u)\). The reverse inequality holds because \(w=u\cdot u^{-1}w\).
+\end{proof}
+
+The prefix relation is the right weak order \(\le_R\) of~\cite[\S3.1]{BB}, also used in~\cite{GG}. Hart and Rowley call it the weak (left) Bruhat order; only the name differs.
+
+\begin{definition}[{\cite[\S1]{HR}}]\label{def:ancestor}
+An \emph{involution} is an element \(u\neq e\) with \(u^2=e\). For \(w\neq e\), let \(\IP(w)\) be the set of prefixes of \(w\) that are involutions, and let \(A(w)\) be the set of elements of \(\IP(w)\) of largest length. The element \(w\) has the \emph{ancestor property} if \(A(w)\) has exactly one element, the \emph{ancestor} \(a(w)\). Its \emph{remainder} is \(\rem(w)=a(w)^{-1}w\).
+\end{definition}
+
+The set \(\IP(w)\) is not empty, since the first letter of a reduced word of \(w\) is a prefix and an involution. By Lemma~\ref{lem:prefix}, \(\ell(\rem(w))=\ell(w)-\ell(a(w))<\ell(w)\).
+
+\begin{definition}[{\cite[\S1]{HR}}]\label{def:linv}
+The \emph{ancestor decomposition} of \(w\neq e\) is \(w=a_1a_2\cdots a_k\), where \(a_1=a(w)\) and \(a_2\cdots a_k\) is the ancestor decomposition of \(\rem(w)\). The \emph{involution length} is the number of factors:
+\begin{equation}\label{eq:linv}
+\linv(e)=0,\qquad \linv(w)=1+\linv(\rem(w))\quad (w\neq e).
+\end{equation}
+\end{definition}
+
+The ancestor decomposition of \(e\) is the empty product. The recursion~\eqref{eq:linv} stops because the length drops at each step. It is defined whenever every element met along the way has the ancestor property. When every non-identity element of \(W\) has the ancestor property, we write
+\begin{equation}\label{eq:M}
+M(W)=\max_{w\in W}\linv(w).
+\end{equation}
+
+The following two statements paraphrase~\cite{HR}. The wording of Conjecture~1.3 is the same in the arXiv version and in the journal version of~\cite{HR}.
+
+\begin{conjecture}[{the Ancestor Conjecture, \cite[Conj.~1.2]{HR}}]\label{conj:ancestor}
+Every non-identity element of a finite Coxeter group has the ancestor property.
+\end{conjecture}
+
+\begin{conjecture}[{\cite[Conj.~1.3]{HR}}]\label{conj:rank}
+Assume Conjecture~\ref{conj:ancestor}. If \(W\) is a finite Coxeter group, then \(\linv(w)\le\rank(W)\) for every \(w\in W\).
+\end{conjecture}
+
+Gaetz and Gao proved Conjecture~\ref{conj:ancestor} for all Coxeter groups~\cite[Cor.~1.2]{GG}. So the hypothesis of Conjecture~\ref{conj:rank} holds. Our counterexamples do not use their theorem: in each case we verify the ancestor property directly.
+
+\emph{Labelling.} We write the generators as \(r_1,r_2,\dots\) and use these Coxeter graphs: \(H_3\) is \(r_1\overset{5}{-}r_2-r_3\), that is, \(m(r_1,r_2)=5\), \(m(r_2,r_3)=3\) and \(m(r_1,r_3)=2\); \(H_4\) is \(r_1\overset{5}{-}r_2-r_3-r_4\); \(F_4\) is \(r_1-r_2\overset{4}{-}r_3-r_4\); and for \(n=6,7,8\), \(E_n\) is the path \(r_1-r_3-r_4-\dots-r_n\) with \(r_2\) joined to \(r_4\), as in Bourbaki.
+
+\section{Two standard facts about reduced words}\label{sec:facts}
+
+A \emph{braid move} replaces, inside a word, a factor \(sts\cdots\) of \(m(s,t)\) alternating letters by the factor \(tst\cdots\) of the same length, where \(s\neq t\) and \(m(s,t)<\infty\). It changes neither the element represented nor the number of letters. In \(H_3\) there are exactly three kinds of braid move:
+\begin{equation}\label{eq:braidH3}
+r_1r_3\leftrightarrow r_3r_1,\qquad r_2r_3r_2\leftrightarrow r_3r_2r_3,\qquad r_1r_2r_1r_2r_1\leftrightarrow r_2r_1r_2r_1r_2.
+\end{equation}
+
+\begin{fact}[Matsumoto; {\cite[Thm.~3.3.1(ii)]{BB}}]\label{fact:matsumoto}
+Any two reduced words of the same element are connected by a sequence of braid moves.
+\end{fact}
+
+\begin{fact}[Tits; {\cite[Thm.~3.3.1(i)]{BB}}]\label{fact:tits}
+Any word can be turned into a reduced word for the same element by a sequence of braid moves and deletions of factors \(ss\).
+\end{fact}
+
+\begin{lemma}\label{lem:reduced}
+A word is reduced if and only if no word obtained from it by braid moves has two equal adjacent letters.
+\end{lemma}
+
+\begin{proof}
+If the word is reduced, a braid-equivalent word containing \(ss\) would give, after deleting \(ss\), a shorter word for the same element; this is impossible. If the word is not reduced, Fact~\ref{fact:tits} shortens it by braid moves and deletions. Braid moves keep the number of letters, so a deletion occurs. The word just before the first deletion comes from the original by braid moves alone, and it contains a factor \(ss\).
+\end{proof}
+
+\begin{lemma}\label{lem:invol}
+Let \(a\) be a reduced word of an element \(u\neq e\). Then:
+\begin{enumerate}
+\item \(\Red(u)\) is the set of words obtained from \(a\) by braid moves;
+\item \(u\) is an involution if and only if the reversal of \(a\) lies in \(\Red(u)\).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(1) Braid moves send reduced words of \(u\) to reduced words of \(u\); Fact~\ref{fact:matsumoto} gives the converse. (2) The reversal of \(a\) is a reduced word of \(u^{-1}\). If \(u=u^{-1}\), it lies in \(\Red(u)\). Conversely, if it lies in \(\Red(u)\), it represents both \(u\) and \(u^{-1}\), so \(u^2=e\); as \(u\neq e\), \(u\) is an involution.
+\end{proof}
+
+By definition, the prefixes of \(w\) are the elements represented by the initial segments of the words in \(\Red(w)\).
+
+\section{The counterexample in \texorpdfstring{\(H_3\)}{H3}}\label{sec:h3}
+
+\begin{theorem}\label{thm:h3}
+In the Coxeter group \(H_3\), the element
+\[
+w=r_2r_1r_2r_3r_1r_2r_1
+\]
+has length \(7\), and every element met in the recursion~\eqref{eq:linv} has the ancestor property. Its ancestor decomposition is
+\begin{equation}\label{eq:decomp}
+w=(r_2r_1r_2)(r_1r_3)(r_2)(r_1).
+\end{equation}
+Hence \(\linv(w)=4>3=\rank(H_3)\), and Conjecture~\ref{conj:rank} (Conjecture~1.3 of~\cite{HR}) is false.
+\end{theorem}
+
+The proof finds all reduced words of \(w\) with Lemma~\ref{lem:reduced} and Lemma~\ref{lem:invol}(1). These give all prefixes of \(w\). Lemma~\ref{lem:invol}(2) then decides which prefixes are involutions, which gives the ancestor. The same steps are repeated on each remainder.
+
+\begin{proof}
+We use one observation throughout. In every word listed below, the only braid moves of~\eqref{eq:braidH3} that apply are swaps of an adjacent pair \(r_1,r_3\). Indeed, no listed word contains \(r_2r_3r_2\) or \(r_3r_2r_3\), and its longest factor alternating between \(r_1\) and \(r_2\) has at most four letters, fewer than \(m(r_1,r_2)=5\). Each braid class below is listed in full, so this can be checked word by word.
+
+\emph{Step 1.} The word \(r_2r_1r_2r_3r_1r_2r_1\) has one adjacent pair \(r_3r_1\). Swapping it gives \(r_2r_1r_2r_1r_3r_2r_1\), in which the only such swap leads back. So the braid class is
+\[
+\{\,r_2r_1r_2r_3r_1r_2r_1,\ r_2r_1r_2r_1r_3r_2r_1\,\}.
+\]
+Neither word has two equal adjacent letters. By Lemma~\ref{lem:reduced} both are reduced, so \(\ell(w)=7\). By Lemma~\ref{lem:invol}(1) they form \(\Red(w)\).
+
+\emph{Step 2.} The initial segments of these two words represent the nine prefixes of \(w\) in Table~\ref{tab:prefixes}. For each prefix \(u\neq e\) the table lists \(\Red(u)\), which is the braid class of the segment by Lemma~\ref{lem:invol}(1), and the reversal of one reduced word. By Lemma~\ref{lem:invol}(2), \(u\) is an involution exactly when this reversal is in \(\Red(u)\). Hence \(\IP(w)=\{r_2,\ r_2r_1r_2\}\). Its longest element is unique, so
+\[
+a(w)=r_2r_1r_2,\qquad \rem(w)=r_1r_3r_2r_1.
+\]
+The remainder is a final segment of the reduced word \(r_2r_1r_2r_1r_3r_2r_1\), hence reduced of length \(4\).
+
+\begin{table}[ht]
+\small
+\caption{The prefixes \(u\) of \(w=r_2r_1r_2r_3r_1r_2r_1\) in \(H_3\).}\label{tab:prefixes}
+\begin{tabular}{@{}lcllc@{}}
+\toprule
+\(u\) & \(\ell(u)\) & \(\Red(u)\) & reversal & involution? \\
+\midrule
+\(e\) & 0 & empty word & --- & no \\
+\(r_2\) & 1 & \(r_2\) & \(r_2\) & yes \\
+\(r_2r_1\) & 2 & \(r_2r_1\) & \(r_1r_2\) & no \\
+\(r_2r_1r_2\) & 3 & \(r_2r_1r_2\) & \(r_2r_1r_2\) & yes \\
+\(r_2r_1r_2r_1\) & 4 & \(r_2r_1r_2r_1\) & \(r_1r_2r_1r_2\) & no \\
+\(r_2r_1r_2r_3\) & 4 & \(r_2r_1r_2r_3\) & \(r_3r_2r_1r_2\) & no \\
+\(r_2r_1r_2r_1r_3\) & 5 & \begin{tabular}[t]{@{}l@{}}\(r_2r_1r_2r_1r_3\),\\ \(r_2r_1r_2r_3r_1\)\end{tabular} & \(r_3r_1r_2r_1r_2\) & no \\
+\(r_2r_1r_2r_1r_3r_2\) & 6 & \begin{tabular}[t]{@{}l@{}}\(r_2r_1r_2r_1r_3r_2\),\\ \(r_2r_1r_2r_3r_1r_2\)\end{tabular} & \(r_2r_3r_1r_2r_1r_2\) & no \\
+\(w\) & 7 & \begin{tabular}[t]{@{}l@{}}\(r_2r_1r_2r_1r_3r_2r_1\),\\ \(r_2r_1r_2r_3r_1r_2r_1\)\end{tabular} & \(r_1r_2r_3r_1r_2r_1r_2\) & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Step 3.} The remainder \(w_1=r_1r_3r_2r_1\) has braid class \(\Red(w_1)=\{r_1r_3r_2r_1,\) \(r_3r_1r_2r_1\}\). Its prefixes are \(e\), \(r_1\), \(r_3\), \(r_1r_3\), \(r_1r_3r_2\) and \(w_1\). The generators \(r_1\) and \(r_3\) are involutions. The element \(r_1r_3\) has \(\Red(r_1r_3)=\{r_1r_3,\ r_3r_1\}\), which contains the reversal \(r_3r_1\), so it is an involution. The element \(r_1r_3r_2\) has \(\Red(r_1r_3r_2)=\{r_1r_3r_2,\ r_3r_1r_2\}\), which does not contain the reversal \(r_2r_3r_1\). Finally, \(\Red(w_1)\) does not contain the reversal \(r_1r_2r_3r_1\). So \(\IP(w_1)=\{r_1,\ r_3,\ r_1r_3\}\), whose longest element is unique. Hence \(a(w_1)=r_1r_3\) and \(\rem(w_1)=r_2r_1\).
+
+\emph{Step 4.} The element \(w_2=r_2r_1\) has the single reduced word \(r_2r_1\). Its prefixes are \(e\), \(r_2\) and \(r_2r_1\). Only \(r_2\) is an involution, by Table~\ref{tab:prefixes}. So \(a(w_2)=r_2\) and \(\rem(w_2)=r_1\).
+
+\emph{Step 5.} The element \(r_1\) is an involution, so \(a(r_1)=r_1\) and \(\rem(r_1)=e\).
+
+The four ancestors found in Steps~2--5 are each unique, and they give~\eqref{eq:decomp}. So \(\linv(w)=4\).
+\end{proof}
+
+The proof uses only the relations of \(H_3\), Facts~\ref{fact:matsumoto} and~\ref{fact:tits}, and Lemmas~\ref{lem:reduced} and~\ref{lem:invol}. It uses neither Conjecture~\ref{conj:ancestor} nor any computer output.
+
+\section{Parabolic subgroups}\label{sec:parabolic}
+
+For \(J\subseteq S\), the \emph{standard parabolic subgroup} \(W_J\) is the subgroup generated by \(J\). The next lemma shows that a counterexample in \(W_J\) is also one in \(W\), provided the rank of \(W\) is still too small.
+
+\begin{fact}[{\cite[\S5.5]{Hum}}]\label{fact:parabolic}
+\((W_J,J)\) is a Coxeter system, and its length function is the restriction of \(\ell\) to \(W_J\).
+\end{fact}
+
+\begin{lemma}\label{lem:parabolic}
+Let \(J\subseteq S\) and \(w\in W_J\). Then every reduced word of \(w\) uses only letters from \(J\); the prefixes of \(w\) in \((W,S)\) and in \((W_J,J)\) are the same elements, with the same lengths; and the ancestor decomposition and \(\linv(w)\) are the same in \(W\) and in \(W_J\). Consequently \(M(W)\ge M(W_J)\) whenever both sides of~\eqref{eq:M} are defined.
+\end{lemma}
+
+\begin{proof}
+By Fact~\ref{fact:parabolic}, a reduced word of \(w\) in \((W_J,J)\) has \(\ell(w)\) letters, so it is a reduced word of \(w\) in \(W\) using only letters from \(J\). A braid move replaces an alternating factor in two letters \(s,t\), which contains both, by another one containing both; so braid moves preserve the set of letters used. By Fact~\ref{fact:matsumoto}, all reduced words of \(w\) in \(W\) use letters from \(J\) only. Hence \(w\) has the same reduced words in \(W\) and in \(W_J\), so the same prefixes; they lie in \(W_J\), where the two length functions agree. Involutions of \(W_J\) are the involutions of \(W\) that lie in \(W_J\). So \(\IP(w)\), \(A(w)\) and \(a(w)\) agree, and \(\rem(w)\in W_J\). Induction on \(\ell(w)\) completes the proof.
+\end{proof}
+
+\begin{remark}\label{rem:inheritance}
+\(H_3\) is the parabolic subgroup of \(H_4\) on \(\{r_1,r_2,r_3\}\). So Theorem~\ref{thm:h3} only gives \(M(H_4)\ge4=\rank(H_4)\), which is not a violation; \(H_4\) needs its own computation. Levinstein~\cite{Lev} used the inclusion \(E_6\subset E_7\) in this way to obtain \(M(E_7)\ge 8\).
+\end{remark}
+
+\section{Computer verification}\label{sec:computer}
+
+\begin{proposition}\label{prop:maxima}
+In \(H_3\), \(F_4\), \(H_4\) and \(E_6\), every non-identity element has the ancestor property, and the values in Table~\ref{tab:maxima} hold. In particular \(M(W)>\rank(W)\) in all four groups.
+\end{proposition}
+
+\begin{table}[ht]
+\small
+\caption{Maximum involution length (computer-verified, exact).}\label{tab:maxima}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Group & rank & order & involutions & \(M(W)\) & count of \(\linv>\rank\) \\
+\midrule
+\(H_3\) & 3 & 120 & 31 & 4 & 3 \\
+\(F_4\) & 4 & 1152 & 139 & 5 & 50 \\
+\(H_4\) & 4 & 14400 & 571 & 7 & 1746 \\
+\(E_6\) & 6 & 51840 & 891 & 8 & 160 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The number of elements with \(\linv=0,1,2,\dots\) is
+\begin{align*}
+H_3&:\ 1,\ 31,\ 52,\ 33,\ 3;\\
+F_4&:\ 1,\ 139,\ 374,\ 396,\ 192,\ 50;\\
+H_4&:\ 1,\ 571,\ 2854,\ 5032,\ 4196,\ 1567,\ 173,\ 6;\\
+E_6&:\ 1,\ 891,\ 6664,\ 15236,\ 16850,\ 9622,\ 2416,\ 150,\ 10.
+\end{align*}
+
+\emph{Status of Proposition~\ref{prop:maxima}.} It is a computer-verified statement. For \(H_3\), \(F_4\) and \(H_4\) it was computed by two independently written programs, described below, which agree on every value. For \(E_6\) the slower of the two programs did not finish; the primary program and a separately written exploratory program, which also models the group by permutations of the roots, agree on every value.
+
+\emph{Sample witnesses} (from the archived outputs). In \(H_3\), the three elements above the rank are \(w\) of Theorem~\ref{thm:h3}, \(r_2r_1r_3r_2r_1r_2r_3\) and \(r_1r_2r_1r_2r_1r_3r_2r_1\). In \(F_4\), the element \(r_3r_4r_1r_2r_3r_2r_1\) has length \(7\) and ancestor decomposition \((r_1r_3)(r_2r_4)(r_3)(r_2)(r_1)\), so \(\linv=5\). In \(H_4\), a shortest element above the rank is \(r_2r_1r_3r_2r_1r_2r_3r_4\), of length \(8\). In \(E_6\), a shortest element above the rank, of length \(11\), is
+\[
+r_1r_4r_3r_5r_4r_2r_6r_5r_4r_3r_1.
+\]
+
+\subsection{The two programs}
+Both programs are written in Python using only the standard library, and use integer arithmetic only.
+
+The \emph{primary program} \file{cert/hr_tables.py} builds the root system exactly over \(\Z[\varphi]\), where \(\varphi^2=\varphi+1\), and represents each group element by its permutation of the roots. The length of \(w\) is the number of positive roots that \(w^{-1}\) sends to negative roots~\cite[\S5.6]{Hum}. The prefix test is containment of inversion sets~\cite[Prop.~3.1.3]{BB}. This test was compared with Lemma~\ref{lem:prefix} on all \(14{,}400\) pairs of elements of \(H_3\) and all \(1{,}327{,}104\) pairs of \(F_4\), with no mismatch. The ancestor is found by checking every involution, and its uniqueness is checked for every \(w\neq e\).
+
+The \emph{cross-check} \file{cert/hr_tables_x.py} shares no code with the primary program. It represents the group by the matrices of its geometric representation, exactly over \(\Z[\varphi]\) for \(H_3\) and \(H_4\) and over \(\Z[\sqrt2]\) for \(F_4\), and uses no roots. The length is the distance from \(e\) in the Cayley graph, computed by breadth-first search. The prefixes of \(w\) are the elements reached from \(w\) by successive length-decreasing right multiplications by generators. An element is an involution if its matrix squares to the identity; this test was compared with word reversal, with no mismatch. To find the ancestor, the program goes down from \(w\) one length at a time through the prefixes of \(w\), starting with \(w\) itself. The ancestor is the involution in the first such level that contains an involution, and its uniqueness is checked.
+
+\subsection{Calibration against the source}
+Both programs reproduce the example in \(A_6\) worked out in~\cite[\S3]{HR}, where the Coxeter graph is the path \(r_1-r_2-\dots-r_6\). For \(w=r_6r_3r_2r_1r_4r_5\) the ancestor decomposition is \((r_3r_6)(r_2r_4)(r_1r_5)\), and the version read from the right is \((r_3)(r_2r_4r_6)(r_1r_5)\), as in the source. Exchanging left and right would exchange these two outputs, so the example fixes the convention. Both programs also confirm, on every Coxeter element (a product of all generators, each once) of \(H_3\) and \(F_4\), the statement of~\cite{HR} that the ancestor of a Coxeter element is the product of its left descents; the primary program confirms it on every Coxeter element of \(H_4\) and \(E_6\). Three other greedy variants (read from the right, and two alternating versions) also exceed the rank: their maxima are \(4\) in \(H_3\) and \(5\) in \(F_4\).
+
+\subsection{List of certificates}
+Runs 1--3 below were made on 2026-11-27 with Python~3.12.10 on Windows~11, from a fresh clone of the working repository (commit \texttt{d72b9ae}), into which the certificate scripts were copied. Each archived output records the command, the date, the commit, the SHA-256 hashes of the scripts, and the full output. Their commands are run in the folder \file{cert/}. Run~4 is an earlier exploratory run, made the same day with the same Python version, whose output has no such header.
+\begin{enumerate}
+\item \emph{Primary program, all four groups.} It checks the \(A_6\) example, Theorem~\ref{thm:h3}, and every row of Table~\ref{tab:maxima}. Command:
+\begin{verbatim}
+python hr_tables.py --big
+\end{verbatim}
+Archived output: \file{cert/hr_tables.out}, ending with \texttt{PASS} (runtime \(206\) s).
+\item \emph{Cross-check, \(H_3\) and \(F_4\).} It checks the \(A_6\) example, Theorem~\ref{thm:h3}, and the rows \(H_3\) and \(F_4\). Command:
+\begin{verbatim}
+python hr_tables_x.py
+\end{verbatim}
+Archived output: \file{cert/hr_tables_x.out}, ending with \texttt{PASS} (\(23\) s).
+\item \emph{Cross-check, adding \(H_4\).} Command:
+\begin{verbatim}
+python hr_tables_x.py --h4
+\end{verbatim}
+Archived output: \file{cert/hr_tables_x_h4.out}, ending with \texttt{PASS} (\(34\) s).
+\item \emph{Exploratory program for \(E_6\).} The script \file{scripts/rows.py}, which uses \file{scripts/coxlib.py}, gives the \(E_6\) row of Table~\ref{tab:maxima}. Archived output: \file{scripts/out/rows_2026-11-27.txt}.
+\end{enumerate}
+
+\subsection{Numerical results for \texorpdfstring{\(E_7\)}{E7} and \texorpdfstring{\(E_8\)}{E8}}\label{sec:numerical}
+The following results are \emph{numerical}. They rest on one whole-group program, \file{scripts/big.py} (Python with NumPy~2.5.5, output \file{scripts/out/big_runs_2026-11-27.jsonl}), and on a single-element checker that uses a different method, \file{scripts/check_word.py} (output \file{scripts/out/check_word_2026-11-27.txt}). They have not been reproduced by an independent second whole-group program.
+
+In \(E_7\), of order \(2{,}903{,}040\) and rank \(7\), the whole-group program finds \(M(E_7)=9\), with \(10{,}997\) elements above the rank. The number of elements with \(\linv=0,1,\dots,9\) is
+\[
+\begin{array}{l}
+1,\ 10207,\ 139442,\ 531987,\ 919660,\\
+802863,\ 385355,\ 102528,\ 9566,\ 1431.
+\end{array}
+\]
+The element
+\[
+w_7=r_7r_5r_6r_4r_5r_3r_4r_1r_3r_2r_4r_5r_6r_7
+\]
+has length \(14\) and ancestor decomposition
+\[
+(r_7r_5)(r_6r_4)(r_5r_3)(r_4r_1)(r_3r_2)(r_4)(r_5)(r_6)(r_7),
+\]
+so \(\linv(w_7)=9\); the single-element checker agrees. Read in \(E_8\), the same element has \(\linv(w_7)=9\) by the checker, as Lemma~\ref{lem:parabolic} predicts. Hence \(M(E_8)\ge9>8\). The exact value of \(M(E_8)\) was not computed.
+
+\section{Formal verification}\label{sec:lean}
+
+The files \file{lean/Pipeline/HartRowley/Main.lean} and \file{lean/Pipeline/HartRowley/Data.lean} were checked with Lean~4, version 4.37.0-rc1. They import no library. All proofs are by kernel evaluation (\texttt{decide +kernel}); there is no \texttt{sorry} and no \texttt{native\_decide}, and every theorem depends only on the axioms \texttt{propext} and \texttt{Classical.choice}. The build log and the axiom report are archived as \file{cert/lean_check.out}.
+
+\emph{What is formalized.} Let \(G\) be the group of permutations of the \(30\) roots of \(H_3\) generated by three explicit permutations \(s_1,s_2,s_3\). The Lean kernel checks the following.
+\begin{itemize}
+\item \texttt{relations\_H3}: \(s_1,s_2,s_3\) satisfy the relations~\eqref{eq:presentation} of \(H_3\), with these exact orders.
+\item \texttt{table\_ok} and \texttt{bfs\_reaches\_all}: the \(120\) listed permutations are distinct and include the identity; the table of right multiplications by \(s_1,s_2,s_3\) agrees with the permutations; and breadth-first search from the identity reaches all \(120\).
+\item \texttt{lenData\_ok} and \texttt{involData\_ok}: the table of word lengths equals the breadth-first distances in the Cayley graph, and the list of involutions is exact.
+\item \texttt{witness\_facts}: the element \(w\) of Theorem~\ref{thm:h3} has length \(7\), exactly two involution prefixes (\(r_2\) and \(r_2r_1r_2\)), the decomposition~\eqref{eq:decomp}, and \(\linv(w)=4\).
+\item \texttt{h3\_table}: every non-identity element has a unique ancestor, the maximum of \(\linv\) is \(4\), and exactly \(3\) elements have \(\linv>3\).
+\item \texttt{h3\_counterexample}: the combined statement.
+\end{itemize}
+In Lean, an involution \(u\) is a prefix of \(w\) when \(\ell(u)+\ell(uw)=\ell(w)\); since \(u^{-1}=u\), this is Lemma~\ref{lem:prefix}.
+
+\emph{What is not formalized.} The fact \(\lvert W(H_3)\rvert=120\)~\cite[\S2.11]{Hum} is cited, not proved in Lean. With the checked relations, \(r_i\mapsto s_i\) defines a surjective homomorphism \(W(H_3)\to G\); equal orders make it an isomorphism, so word length in \(G\) is the Coxeter length of \(H_3\). The connection with the Coxeter groups of the Mathlib library was not made. Two short arguments link the Lean definitions to the mathematical ones: the recursion in Lean has a step bound of \(20\), larger than the maximum length \(15\), and each step lowers the length; and the list of \(120\) elements is closed under multiplication because it is closed under right multiplication by the generators. These arguments are not themselves stated in Lean. Proposition~\ref{prop:maxima} for \(F_4\), \(H_4\) and \(E_6\), the results of Section~\ref{sec:numerical}, Lemma~\ref{lem:parabolic}, and the hand proof of Theorem~\ref{thm:h3} are not formalized.
+
+\section{The evidence reported in the source}\label{sec:source}
+
+Hart and Rowley report that both conjectures were verified with the Magma system for every non-dihedral irreducible finite Coxeter group of order below \(100{,}000\), a list that includes \(H_3\), \(H_4\), \(F_4\) and \(E_6\)~\cite[\S3]{HR}. Proposition~\ref{prop:maxima} contradicts this report for these four groups. We do not know the cause.
+
+\begin{remark}[a possible explanation; heuristic]\label{rem:heuristic}
+Let \(m(w)\) be the least number of involutions in a factorization \(w=u_1\cdots u_k\) with \(\ell(w)=\ell(u_1)+\dots+\ell(u_k)\). The ancestor decomposition is such a factorization, so \(m(w)\le\linv(w)\). This non-greedy count satisfies the rank bound in \(H_3\), \(F_4\), \(H_4\) and \(E_6\). A computation of \(m\) instead of \(\linv\) would have reported the conjecture as verified in these groups. This is a guess about code we have not seen.
+\end{remark}
+
+\section{Related results and work in progress}\label{sec:wip}
+
+The following statements are not results of this note, and their proofs are not included here. Items~1 and~2 have a written proof that passed AI review (Claude Opus checker, Claude Fable adversary, Claude Sonnet arbiter; round~2: all three accept with zero issues); it has not been checked by experts. The full proof is in the separate paper \emph{Hart--Rowley Conjecture~1.3 holds in type~A}~\cite{TypeA}, in the same repository. Item~3 is work in progress.
+
+Let \(S_N\) be the symmetric group on \(\{1,\dots,N\}\), the Coxeter group of type \(A_{N-1}\), of rank \(N-1\). The \emph{displacement} of a permutation is \(\disp(w)=\max_i\lvert w(i)-i\rvert\).
+\begin{enumerate}
+\item \emph{Type \(A\).} A written argument shows \(\linv(w)\le\disp(w)\le N-1\) for every \(w\in S_N\), which is Conjecture~\ref{conj:rank} in type \(A\). It uses Corollary~1.2 of~\cite{GG}, which it proves again in full from textbook facts~\cite{BB}, following and crediting Gaetz and Gao. Exact computations by two independent implementations agree with it on all of \(S_3,\dots,S_{10}\): they find the same ancestor for every element, and no element with \(\linv(w)>\disp(w)\). These computations corroborate the argument; they are not part of it.
+\item \emph{Type \(B\).} Let \(B_n\) be the group of signed permutations, that is, permutations \(w\) of the set \(\{\pm1,\dots,\pm n\}\) with \(w(-i)=-w(i)\) for all \(i\); it is the Coxeter group of type \(B_n\), of rank \(n\). Let \(D_n\) be its subgroup of signed permutations with an even number of negative entries among \(w(1),\dots,w(n)\); it is the Coxeter group of type \(D_n\). We write a signed permutation by its window \((w(1),\dots,w(n))\). A reduction, reviewed together with item~1, shows that ancestors and involution lengths in \(B_n\) agree with those computed in \(S_{2n}\), where \(B_n\) acts on the \(2n\) letters \(\pm1,\dots,\pm n\). The reason is that the prefix order of \(B_n\) is the restriction of that of \(S_{2n}\). With item~1 it gives \(\linv\le 2n-1\) in \(B_n\), not the conjectured \(n\). Conjecture~\ref{conj:rank} remains open in types \(B\) and \(D\). The reduction fails in type \(D\) already in \(D_3\): for the window \((-3,-1,2)\), \(\linv\) is \(2\) in \(D_3\) but \(3\) in \(S_6\). Exact computations find \(6\) elements of \(D_3\) whose ancestor differs from the one in \(S_6\), and \(4\) whose involution length differs; in \(D_4\) the counts are \(55\) and \(33\).
+\item \emph{The count \(m\) of Remark~\ref{rem:heuristic}.} Exact numerical computations give \(\max m=\rank(W)\) for \(H_3\), \(F_4\), \(H_4\), \(E_6\) and \(E_7\), for \(A_n\) with \(n\le9\) and for \(B_n\) with \(n\le8\), and \(\max m\le\rank(W)\) for \(D_4\), \(D_5\), \(D_6\) and the dihedral groups \(I_2(k)\), \(3\le k\le20\). Since \(m(w)\le\linv(w)\), item~1 gives \(m(w)\le\rank(W)\) in every symmetric group. Whether \(m(w)\le\rank(W)\) in every finite Coxeter group is open.
+\end{enumerate}
+
+\section*{How this work was produced}
+Disclosure: Human researcher assisted by AI systems during search, proof drafting, and verification. Internally audited and computationally verified, externally unrefereed.
+
+The accompanying repository is \url{https://github.com/nebulousice/hart-rowley-conjecture-1-3}. It contains the scripts, the archived outputs and the Lean files cited above, with instructions to reproduce them. All file paths in this note are relative to it.
+
+\bibliographystyle{amsplain}
+{\raggedright
+\begin{thebibliography}{9}
+
+\bibitem{BB}
+A.~Bj\"orner and F.~Brenti, \emph{Combinatorics of {C}oxeter groups}, Graduate Texts in Mathematics, vol.~231, Springer, New York, 2005, \href{https://doi.org/10.1007/3-540-27596-7}{doi:10.1007/3-540-27596-7}.
+
+\bibitem{GG}
+C.~Gaetz and Y.~Gao, \emph{Separable elements and {B}ruhat orders}, preprint, 2026, \href{https://arxiv.org/abs/2610.22857}{arXiv:2610.22857}.
+
+\bibitem{Gim}
+H.~Gimenez, \emph{On the weak right order of a right-angled {C}oxeter system}, preprint, 2026, \href{https://arxiv.org/abs/2606.21104}{arXiv:2606.21104}.
+
+\bibitem{HR}
+S.~B. Hart and P.~J. Rowley, \emph{A note on involution prefixes in {C}oxeter groups}, Arch. Math. (Basel) \textbf{126} (2026), no.~3, 231--237, \href{https://doi.org/10.1007/s00013-025-02220-z}{doi:10.1007/s00013-025-02220-z}; preprint \href{https://arxiv.org/abs/2502.00777}{arXiv:2502.00777}.
+
+\bibitem{Hum}
+J.~E. Humphreys, \emph{Reflection groups and {C}oxeter groups}, Cambridge Studies in Advanced Mathematics, vol.~29, Cambridge University Press, Cambridge, 1990, \href{https://doi.org/10.1017/CBO9780511623646}{doi:10.1017/CBO9780511623646}.
+
+\bibitem{Lev}
+S.~Levinstein, \emph{Counterexamples to the {H}art--{R}owley involution-length conjecture in finite {C}oxeter groups}, Zenodo preprint, 2026-11-27, \href{https://doi.org/10.5281/zenodo.24581942}{doi:10.5281/zenodo.24581942}; see also \href{https://github.com/s66lem/conjectures/pull/15}{github.com/s66lem/conjectures, pull request~15}.
+
+\bibitem{OmegaPR}
+The Omega Institute, \emph{trureturing}, pull request 17548 (2026-10-15), on the right-hand version of the greedy decomposition of~\cite{HR}, \url{https://github.com/the-omega-institute/trureturing/pull/17548}.
+
+\bibitem{TypeA}
+\emph{Hart--{R}owley {C}onjecture~1.3 holds in type~{A}}, manuscript, 2026, folder \file{typeA/} of \url{https://github.com/nebulousice/hart-rowley-conjecture-1-3}.
+
+\end{thebibliography}
+}
+\end{document}
